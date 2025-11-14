@@ -35,8 +35,30 @@ clean-targets:         # directories to be removed by `dbt clean`
 # continue to be built as views. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 
+vars:
+  v_division: 'South America'
+  dbt_dq_tool_schema: "{{env_var('DBT_AUDITSCHEMA_NAME','AUDITING_DEV')}}"
+  dq_tools_enable_store_test_results: True
+
+seeds:
+  schema: "{{env_var('DBT_LKPSCHEMA_NAME','LOOKUP_DEV')}}"
+
+on-run-start: "grant select on table qwt_dev.auditing_dev.qwt_models_audit to role sysadmin;"
+on-run-end: 
+  - '{{ dq_tools.store_test_results(results) }}'
+
+#models:
+#  +pre-hook: 
+#   - "insert into auditing_dev.qwt_models_audit values ('{{this}}', current_timestamp(), null, null);"
+#  +post-hook: 
+#   - "update auditing_dev.qwt_models_audit set endtime = current_timestamp , duration = datediff('second', starttime, current_timestamp()) where modelname = '{{this}}';"
+
 models:
-  my_new_project:
-    # Applies to all files under models/example/
-    example:
-      +materialized: table
+  +pre-hook:
+    - "insert into {{ env_var('DBT_AUDITSCHEMA_NAME', 'AUDITING_DEV') }}.qwt_models_audit values ('{{this}}', current_timestamp(), null, null);"
+  +post-hook:
+    - "update {{ env_var('DBT_AUDITSCHEMA_NAME', 'AUDITING_DEV') }}.qwt_models_audit set endtime = current_timestamp , duration = datediff('second', starttime, current_timestamp()) where modelname = '{{this}}';"
+ 
+
+  dq_tools:
+   +schema: "{{ env_var('DBT_AUDITSCHEMA_NAME', 'AUDITING_DEV') }}"

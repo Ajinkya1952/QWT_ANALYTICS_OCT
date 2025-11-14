@@ -1,0 +1,8 @@
+seeds:
+  - name: lkp_devisions
+    config:
+      schema: lookup_dev
+
+  - name: lkp_categories
+    config:
+      schema: lookup_dev

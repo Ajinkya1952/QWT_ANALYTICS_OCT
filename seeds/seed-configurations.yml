@@ -1,8 +1,4 @@
 seeds:
   - name: lkp_devisions
     config:
-      schema: lookup_dev
-
-  - name: lkp_categories
-    config:
-      schema: lookup_dev
+      schema: "{{env_var('DBT_LKPSCHEMA_NAME','LOOKUP_DEV')}}"

@@ -1,4 +1,4 @@
-{{ config(materialized = 'table', schema = 'transforming_dev') }}
+{{ config(materialized = 'table', schema = env_var('DBT_TRANSSCHEMA_NAME','TRANSFORMING_DEV')) }}
 
 {% set min_order_date = get_min_orderdate() %}
 {% set max_order_date = get_max_orderdate() %}
